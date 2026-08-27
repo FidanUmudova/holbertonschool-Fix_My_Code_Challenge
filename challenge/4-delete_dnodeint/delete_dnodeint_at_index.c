@@ -2,24 +2,23 @@
 #include <stdlib.h>
 
 /**
- * delete_dnodeint_at_index - Deletes the node at index of a dlistint_t list
- * @head: Pointer to the pointer of the first node
- * @index: Index of the node that should be deleted (starts at 0)
+ * delete_dnodeint_at_index - Deletes a node at a given index from a dlistint_t list
+ * @head: Double pointer to the head of the list
+ * @index: Index of the node to delete (starts at 0)
  *
- * Return: 1 if it succeeded, -1 if it failed
+ * Return: 1 on success, -1 on failure
  */
 int delete_dnodeint_at_index(dlistint_t **head, unsigned int index)
 {
 	dlistint_t *current;
-	dlistint_t *prev_node;
-	dlistint_t *next_node;
-	unsigned int i = 0;
+	unsigned int i;
 
 	if (head == NULL || *head == NULL)
 		return (-1);
 
 	current = *head;
 
+	/* 1. Başlanğıc node-u (index == 0) silmək */
 	if (index == 0)
 	{
 		*head = current->next;
@@ -29,23 +28,20 @@ int delete_dnodeint_at_index(dlistint_t **head, unsigned int index)
 		return (1);
 	}
 
-	while (current != NULL && i < index)
-	{
+	/* 2. Silinəcək node-a qədər irəliləmək */
+	for (i = 0; current != NULL && i < index; i++)
 		current = current->next;
-		i++;
-	}
 
+	/* Əgər indeksi tapmadıqsa (siyahı qısadırsa) */
 	if (current == NULL)
 		return (-1);
 
-	prev_node = current->prev;
-	next_node = current->next;
+	/* 3. Ortadakı və ya sondakı node-un əlaqələrini yeniləmək */
+	if (current->next != NULL)
+		current->next->prev = current->prev;
 
-	if (prev_node != NULL)
-		prev_node->next = next_node;
-
-	if (next_node != NULL)
-		next_node->prev = prev_node;
+	if (current->prev != NULL)
+		current->prev->next = current->next;
 
 	free(current);
 	return (1);
